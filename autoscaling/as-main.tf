@@ -17,8 +17,6 @@ resource "aws_launch_template" "website_lt" {
     security_groups = [aws_security_group.upb_instance_sg.id]
   }
 
-#   vpc_security_group_ids = 
-
   tag_specifications {
     resource_type = "instance"
 
@@ -27,7 +25,6 @@ resource "aws_launch_template" "website_lt" {
     }
   }
 
-  user_data = filebase64("${path.module}/user_data.sh")
 }
 
 resource "aws_autoscaling_group" "website_asg" {

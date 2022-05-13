@@ -1,0 +1,46 @@
+-In order to get a functional database, after applying all the changes in terraform you need to access to the db_instance_access and make the following commands:
+
+sudo yum install https://dev.mysql.com/get/mysql80-community-release-el7-5.noarch.rpm -y
+sudo amazon-linux-extras install epel -y
+sudo yum -y install mysql-community-server
+sudo systemctl enable --now mysqld
+
+mysql -h [link-database] -P 3306 -u admin -p
+
+-Once you are connected to the database, create the structure using the following commands
+use factory_database;
+
+create table if not exists employee(
+	employeeId int auto_increment not null primary key
+);
+
+create table if not exists defect(
+	defectId int auto_increment not null primary key,
+	employeeId int not null,
+	defect varchar(500),
+	levelUrgency varchar(20),
+	timeRepair decimal(10,3),
+	image varchar(500),
+	foreign key (employeeId) references employee(employeeId)
+);
+
+insert into employee (employeeId) values (null);
+insert into employee (employeeId) values (null);
+insert into employee (employeeId) values (null);
+insert into employee (employeeId) values (null);
+insert into employee (employeeId) values (null);
+
+insert into defect (employeeId, defect, levelUrgency, timeRepair, image) 
+	values (1, "Bad input operator", "High", 5.5, "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.n2AQhGsibGdtTcluCq9huAHaE8%26pid%3DApi&f=1");
+insert into defect (employeeId, defect, levelUrgency, timeRepair, image) 
+	values (3, "Failure in the connection", "Low", 1, "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.0Y4xNCm8BQFiFhyJbESp4gHaFj%26pid%3DApi&f=1");
+insert into defect (employeeId, defect, levelUrgency, timeRepair, image) 
+	values (4, "Bad configuration of generator", "Medium", 3.2, "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse4.mm.bing.net%2Fth%3Fid%3DOIP.SOaK-D6a23LLzMLywPHJQgHaJ4%26pid%3DApi&f=1");
+insert into defect (employeeId, defect, levelUrgency, timeRepair, image) 
+	values (2, "Bad cable management", "High", 2, "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse2.mm.bing.net%2Fth%3Fid%3DOIP.aiYQRX3PiaE1svnGIHwBrwHaJ4%26pid%3DApi&f=1");
+insert into defect (employeeId, defect, levelUrgency, timeRepair, image) 
+	values (5, "Bad installation of infrastructure", "Medium", 2.5, "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.oS8XjmRQ48itq9zCwytIUQHaFj%26pid%3DApi&f=1");
+	
+	
+	
+- A snapshot of the database will be shared anyway.
