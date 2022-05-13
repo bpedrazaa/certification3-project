@@ -1,22 +1,21 @@
 locals {
-    instance_ami = "ami-0022f774911c1d690"
+    instance_ami = "ami-056103cd002b7517f"
     subnet_ids   = data.aws_ssm_parameters_by_path.vpc_subnets.values
 }
 
 resource "aws_launch_template" "website_lt" {
-  name = "website_launch_template"
+  name = "backend_launch_template"
 
   image_id = local.instance_ami
 
   instance_type = "t2.micro"
 
-  key_name = "upbKeyPair"
-
   network_interfaces {
     associate_public_ip_address = true
-    security_groups = [aws_security_group.upb_instance_sg.id]
+    security_groups = [aws_security_group.backend_instance_sg.id]
   }
 
+  
   tag_specifications {
     resource_type = "instance"
 
@@ -29,14 +28,10 @@ resource "aws_launch_template" "website_lt" {
 
 resource "aws_autoscaling_group" "website_asg" {
   vpc_zone_identifier = local.subnet_ids
-  desired_capacity   = 2
-  max_size           = 3
+  desired_capacity   = 1
+  max_size           = 2
   min_size           = 1
   
-  # target_group_arns  = [
-  #   aws_lb_target_group.website_tg.arn
-  # ]
-
   launch_template {
     id      = aws_launch_template.website_lt.id
     version = "$Latest"
@@ -44,14 +39,14 @@ resource "aws_autoscaling_group" "website_asg" {
 }
 
 resource "aws_lb_target_group" "website_tg" {
-  name        = "website-tg"
+  name     = "website-tg"
   port     = 80
   protocol = "HTTP"
   vpc_id   = data.aws_ssm_parameter.vpc_id_parameter.value
 }
 
-resource "aws_security_group" "upb_load_balancer_sg" {
-  name        = "upb-load-balancer-sg"
+resource "aws_security_group" "load_balancer_sg" {
+  name        = "load-balancer-sg"
   vpc_id      = data.aws_ssm_parameter.vpc_id_parameter.value
 
   ingress {
@@ -70,12 +65,12 @@ resource "aws_security_group" "upb_load_balancer_sg" {
 
 
   tags = {
-    Name = "upb-load-balancer-sg"
+    Name = "load-balancer-sg"
   }
 }
 
-resource "aws_security_group" "upb_instance_sg" {
-  name        = "upb-instance-sg"
+resource "aws_security_group" "backend_instance_sg" {
+  name        = "backend_instance_s"
   vpc_id      = data.aws_ssm_parameter.vpc_id_parameter.value
 
   ingress {
@@ -85,14 +80,6 @@ resource "aws_security_group" "upb_instance_sg" {
     cidr_blocks      = ["0.0.0.0/0"]
   }
   
-  # ingress {
-  #   description      = "http traffic"
-  #   from_port        = 80
-  #   to_port          = 80
-  #   protocol         = "tcp"
-  #   cidr_blocks      = ["0.0.0.0/0"]
-  # }
-
   egress {
     from_port        = 0
     to_port          = 0
@@ -101,7 +88,7 @@ resource "aws_security_group" "upb_instance_sg" {
   }
  
   tags = {
-    Name = "upb-instance-sg"
+    Name = "backend_instance_s"
   }
 }
 
@@ -109,7 +96,7 @@ resource "aws_lb" "upb_alb" {
   name               = "upb-alb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.upb_load_balancer_sg.id]
+  security_groups    = [aws_security_group.load_balancer_sg.id]
   subnets            = local.subnet_ids
 
 }
